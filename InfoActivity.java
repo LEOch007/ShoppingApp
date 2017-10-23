@@ -67,5 +67,13 @@ public class InfoActivity extends Activity {
                 }
             }
         });
+        /*   加入购物车       */
+        final Button shopcart = (Button)findViewById(R.id.shopcart);
+        shopcart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 }
