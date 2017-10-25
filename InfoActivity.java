@@ -1,6 +1,7 @@
 package com.gy.linjliang.shoppingapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -9,6 +10,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lenovo on 2017/10/23.
@@ -21,8 +26,7 @@ public class InfoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.good_info);
 
-        Info p = (Info) getIntent().getSerializableExtra("Info");
-        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.Top);
+        final Info p = (Info) getIntent().getSerializableExtra("Info"); // 接收
 
         //返回键的点击事件
         Button back = (Button) findViewById(R.id.back); //返回键
@@ -72,7 +76,10 @@ public class InfoActivity extends Activity {
         shopcart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(InfoActivity.this,"商品已加入购物车",Toast.LENGTH_SHORT).show();
+                Intent mintent = new Intent();
+                mintent.putExtra("shopgood", p);
+                setResult(RESULT_OK,mintent);
             }
         });
     }
