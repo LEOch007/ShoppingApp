@@ -24,19 +24,19 @@ public class Info implements Serializable {
     public String getcycle() {
         String cycle = "";
         return (cycle+name.charAt(0));
-    }
+    } //商品首字母
     public String getName(){
         return name;
-    }
+    }  //商品名字
     public String getPrice(){
         return price;
-    }
+    }  //商品价格
     public String getType(){
         return type;
-    }
+    }  //商品信息类型
     public String getInformation(){
         return information;
-    }
-    public int getImageindex(){return imageindex;}
+    }  //商品信息
+    public int getImageindex(){return imageindex;}  //商品图片
 }
 

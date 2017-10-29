@@ -12,6 +12,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,10 +78,11 @@ public class InfoActivity extends Activity {
         shopcart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EventBus.getDefault().post(p); //发布者 发布消息
                 Toast.makeText(InfoActivity.this,"商品已加入购物车",Toast.LENGTH_SHORT).show();
-                Intent mintent = new Intent();
-                mintent.putExtra("shopgood", p);
-                setResult(RESULT_OK,mintent);
+//                Intent mintent = new Intent();
+//                mintent.putExtra("shopgood", p);
+//                setResult(RESULT_OK,mintent);
             }
         });
     }

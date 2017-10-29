@@ -15,10 +15,15 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecycleView;
@@ -151,13 +156,41 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        Random random = new Random();//产生随机数
+        //发广播
+        Intent mintent = new Intent("static");
+        Info temp = Infos.get(random.nextInt(Infos.size())); //ShopInfo商品信息
+        mintent.putExtra("info",temp);
+        MainActivity.this.sendBroadcast(mintent);
+
+        //注册订阅者
+        EventBus.getDefault().register(this); //订阅消息
     }
     /*   重写ononActivityResult 处理Intent通信返回的结果   */
+//    @Override
+//    protected void onActivityResult(int requestCode,int resultCode,Intent d){
+//        if(requestCode==1){
+//            if(resultCode==RESULT_OK){
+//                Info shop_good = (Info) d.getSerializableExtra("shopgood");
+//                shopInfos.add(shop_good);
+//                Map<String, Object> temp = new LinkedHashMap<>();
+//                temp.put("cycle",shop_good.getcycle());
+//                temp.put("name", shop_good.getName());
+//                temp.put("value", shop_good.getPrice());
+//                data.add(temp);   //加入数据至购物车
+//                simpleAdapter.notifyDataSetChanged();
+//            }
+//        }
+//    }
     @Override
-    protected void onActivityResult(int requestCode,int resultCode,Intent d){
-        if(requestCode==1){
-            if(resultCode==RESULT_OK){
-                Info shop_good = (Info) d.getSerializableExtra("shopgood");
+    public void onDestroy(){
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+    //订阅方法
+    @Subscribe(threadMode = ThreadMode.MAIN) //选择线程模式
+    public void onMessageEvent(Info shop_good){
                 shopInfos.add(shop_good);
                 Map<String, Object> temp = new LinkedHashMap<>();
                 temp.put("cycle",shop_good.getcycle());
@@ -165,7 +198,5 @@ public class MainActivity extends AppCompatActivity {
                 temp.put("value", shop_good.getPrice());
                 data.add(temp);   //加入数据至购物车
                 simpleAdapter.notifyDataSetChanged();
-            }
-        }
     }
 }
