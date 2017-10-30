@@ -2,6 +2,7 @@ package com.gy.linjliang.shoppingapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -23,12 +24,14 @@ import java.util.List;
 
 public class InfoActivity extends Activity {
     private boolean tag = false;
+    private myReceiver receiver;
+    private Info p; //商品
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.good_info);
 
-        final Info p = (Info) getIntent().getSerializableExtra("Info"); // 接收
+        p = (Info) getIntent().getSerializableExtra("Info"); // 接收
 
         //返回键的点击事件
         Button back = (Button) findViewById(R.id.back); //返回键
@@ -75,14 +78,22 @@ public class InfoActivity extends Activity {
         });
         /*   加入购物车       */
         final Button shopcart = (Button)findViewById(R.id.shopcart);
+        receiver = new myReceiver(); //自定义的接受广播消息并处理
+
         shopcart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*    ---- 发布消息 ----     */
                 EventBus.getDefault().post(p); //发布者 发布消息
                 Toast.makeText(InfoActivity.this,"商品已加入购物车",Toast.LENGTH_SHORT).show();
-//                Intent mintent = new Intent();
-//                mintent.putExtra("shopgood", p);
-//                setResult(RESULT_OK,mintent);
+                 /* --- 注册广播 --- */
+                IntentFilter filter = new IntentFilter();
+                filter.addAction("dynamic");  //动态广播的action
+                registerReceiver(receiver,filter); //注册动态广播
+                /*   -----  发广播 -----   */
+                Intent buyintent = new Intent("dynamic");
+                buyintent.putExtra("buy",p);
+                sendBroadcast(buyintent);
             }
         });
     }

@@ -35,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
     private List<Map<String, Object>> data;
     private FloatingActionButton mfab;
     private boolean tag=false; //点击浮动按钮变化
+    //购物车界面的UI控件
+    private TextView tubiao;
+    private TextView gowuche;
+    private TextView jiage;
+    private View selfline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +59,14 @@ public class MainActivity extends AppCompatActivity {
             add(new Info("Lindt", "¥ 139.43", "重量", "249g",R.mipmap.lindt));
             add(new Info("Borggreve", "¥ 28.90", "重量", "640g",R.mipmap.borggreve));
         }};
+
+        //前置于RecyclerView之前可加速开启APP广播速度
+        Random random = new Random();//产生随机数
+        Info rand_info = Infos.get( random.nextInt(Infos.size()) );
+        /*     ------   发广播  -------   */
+        Intent mintent = new Intent("static");
+        mintent.putExtra("info",rand_info);
+        sendBroadcast(mintent);
 
         /*                      ---  RecyclerView ---                */
         mRecycleView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -127,10 +140,10 @@ public class MainActivity extends AppCompatActivity {
 
         //浮动按钮
         mfab = (FloatingActionButton)findViewById(R.id.fab);
-        final TextView tubiao = (TextView)findViewById(R.id.tubiao);
-        final TextView gowuche = (TextView)findViewById(R.id.gowuche);
-        final TextView jiage = (TextView)findViewById(R.id.jiage);
-        final View selfline = (View)findViewById(R.id.selfline);
+        tubiao = (TextView)findViewById(R.id.tubiao);
+        gowuche = (TextView)findViewById(R.id.gowuche);
+        jiage = (TextView)findViewById(R.id.jiage);
+        selfline = findViewById(R.id.selfline);
         mfab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,34 +170,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Random random = new Random();//产生随机数
-        //发广播
-        Intent mintent = new Intent("static");
-        Info temp = Infos.get(random.nextInt(Infos.size())); //ShopInfo商品信息
-        mintent.putExtra("info",temp);
-        MainActivity.this.sendBroadcast(mintent);
 
-        //注册订阅者
+
+
+        /*     ------   注册订阅者  -------   */
         EventBus.getDefault().register(this); //订阅消息
+
     }
-    /*   重写ononActivityResult 处理Intent通信返回的结果   */
-//    @Override
-//    protected void onActivityResult(int requestCode,int resultCode,Intent d){
-//        if(requestCode==1){
-//            if(resultCode==RESULT_OK){
-//                Info shop_good = (Info) d.getSerializableExtra("shopgood");
-//                shopInfos.add(shop_good);
-//                Map<String, Object> temp = new LinkedHashMap<>();
-//                temp.put("cycle",shop_good.getcycle());
-//                temp.put("name", shop_good.getName());
-//                temp.put("value", shop_good.getPrice());
-//                data.add(temp);   //加入数据至购物车
-//                simpleAdapter.notifyDataSetChanged();
-//            }
-//        }
-//    }
+    //取消订阅
     @Override
-    public void onDestroy(){
+    protected void onDestroy(){
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
@@ -198,5 +193,18 @@ public class MainActivity extends AppCompatActivity {
                 temp.put("value", shop_good.getPrice());
                 data.add(temp);   //加入数据至购物车
                 simpleAdapter.notifyDataSetChanged();
+    }
+    /*   -----   接收新intent消息  -----  */
+    //在同一MainActivity实例里 通过Manifest.xml去设置activity的模式
+    @Override
+    protected void onNewIntent(Intent intent){
+            mfab.setImageResource(R.mipmap.mainpage); //切换图像
+            mListView.setVisibility(View.VISIBLE); //设置ListView可见 RecylerView不可见
+            tubiao.setVisibility(View.VISIBLE);
+            gowuche.setVisibility(View.VISIBLE);
+            jiage.setVisibility(View.VISIBLE);
+            selfline.setVisibility(View.VISIBLE);
+            mRecycleView.setVisibility(View.GONE);
+            tag = true; //相当于已点击
     }
 }

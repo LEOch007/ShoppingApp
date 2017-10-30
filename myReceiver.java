@@ -18,29 +18,56 @@ import android.widget.Toast;
  */
 
 public class myReceiver extends BroadcastReceiver {
+    private Info info; //商品
+    private int cnt=-1; //
     @Override
     public void onReceive(Context context, Intent intent){
+        /*  -- 接收静态广播 -- */
         if(intent.getAction().equals("static")){
-            Info info = (Info)intent.getSerializableExtra("info"); //获取商品信息类
+            info = (Info)intent.getSerializableExtra("info"); //获取商品信息类
             assert info != null; //debug
+            //跳转至InfoActivity 商品信息界面
+            Intent mintent = new Intent(context, InfoActivity.class); //显式调用
+            mintent.putExtra("Info", info);
+            cnt = cnt+1;
+            //打包Intent 最后一个参数flag = PendingIntent.FLAG_UPDATE_CURRENT表示更新之前PendingIntent中的Intent对象数据
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, mintent, PendingIntent.FLAG_UPDATE_CURRENT);
             Bitmap bm = BitmapFactory.decodeResource(context.getResources(),info.getImageindex());
             //获取系统的通知栏管理
             NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
             Notification.Builder builder = new Notification.Builder(context); //实例化Notification构造器
-            builder.setTicker("一条新信息")   //动态设置Notification的属性
-                    .setContentTitle("新商品热卖")
+            builder.setContentTitle("新商品热卖") //动态设置Notification的属性
                     .setContentText(info.getName()+"仅售"+info.getPrice()+"!")
                     .setLargeIcon(bm)
                     .setSmallIcon(info.getImageindex())
-                    .setAutoCancel(true);
-            //跳转至InfoActivity 商品信息界面
-            Intent mintent = new Intent(context, InfoActivity.class); //显式调用
-            mintent.putExtra("Info", info);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, mintent, 0);
-            builder.setContentIntent(pendingIntent); //设置点击Intent
+                    .setTicker("一条新消息")
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent); //设置点击Intent
             Notification notification = builder.build(); //绑定Notification
             manager.notify(0,notification); //发送通知请求
         }
-
+        /*  -- 接收动态广播 -- */
+        else if(intent.getAction().equals("dynamic")){
+            info = (Info)intent.getSerializableExtra("buy"); //获取商品信息类
+            assert info != null; //debug
+            //跳转至购物车界面
+            Intent mintent = new Intent(context, MainActivity.class); //显式调用
+            cnt = cnt+1;
+            //打包Intent
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, mintent, PendingIntent.FLAG_UPDATE_CURRENT);
+            Bitmap bm = BitmapFactory.decodeResource(context.getResources(),info.getImageindex());
+            //获取系统的通知栏管理
+            NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification.Builder builder = new Notification.Builder(context); //实例化Notification构造器
+            builder.setContentTitle("马上下单") //动态设置Notification的属性
+                    .setContentText(info.getName()+"已添加到购物车")
+                    .setLargeIcon(bm)
+                    .setSmallIcon(info.getImageindex())
+                    .setTicker("一条新消息")
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent); //设置点击Intent
+            Notification notification = builder.build(); //绑定Notification
+            manager.notify(0,notification); //发送通知请求
+        }
     }
 }
