@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 public class myReceiver extends BroadcastReceiver {
     private Info info; //商品
-    private int cnt=-1; //
     @Override
     public void onReceive(Context context, Intent intent){
         /*  -- 接收静态广播 -- */
@@ -29,7 +28,6 @@ public class myReceiver extends BroadcastReceiver {
             //跳转至InfoActivity 商品信息界面
             Intent mintent = new Intent(context, InfoActivity.class); //显式调用
             mintent.putExtra("Info", info);
-            cnt = cnt+1;
             //打包Intent 最后一个参数flag = PendingIntent.FLAG_UPDATE_CURRENT表示更新之前PendingIntent中的Intent对象数据
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, mintent, PendingIntent.FLAG_UPDATE_CURRENT);
             Bitmap bm = BitmapFactory.decodeResource(context.getResources(),info.getImageindex());
@@ -52,7 +50,6 @@ public class myReceiver extends BroadcastReceiver {
             assert info != null; //debug
             //跳转至购物车界面
             Intent mintent = new Intent(context, MainActivity.class); //显式调用
-            cnt = cnt+1;
             //打包Intent
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, mintent, PendingIntent.FLAG_UPDATE_CURRENT);
             Bitmap bm = BitmapFactory.decodeResource(context.getResources(),info.getImageindex());

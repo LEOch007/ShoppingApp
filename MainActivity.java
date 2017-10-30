@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.OvershootInLeftAnimator;
+
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecycleView;
     private MyAdapter myAdapter;
@@ -72,7 +75,12 @@ public class MainActivity extends AppCompatActivity {
         mRecycleView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecycleView.setLayoutManager(new LinearLayoutManager(this)); //垂直布局
         myAdapter = new MyAdapter(this, Infos);
-        mRecycleView.setAdapter(myAdapter);//设置适配器
+//        mRecycleView.setAdapter(myAdapter);//设置适配器
+        /*  网上的库 添加动画  */
+        ScaleInAnimationAdapter animationAdapter = new ScaleInAnimationAdapter(myAdapter);
+        animationAdapter.setDuration(1000);
+        mRecycleView.setAdapter(animationAdapter);
+        mRecycleView.setItemAnimator(new OvershootInLeftAnimator());
 
         myAdapter.setOnItemClickLitener(new MyAdapter.OnItemClickLitener()
         {
@@ -169,9 +177,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
 
         /*     ------   注册订阅者  -------   */
         EventBus.getDefault().register(this); //订阅消息
