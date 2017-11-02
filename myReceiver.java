@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 public class myReceiver extends BroadcastReceiver {
     private Info info; //商品
+    private static int num=0;//使用static静态变量 -> 多次初始化该类也只有一个num变量 不会重新初始化它
     @Override
     public void onReceive(Context context, Intent intent){
         /*  -- 接收静态广播 -- */
@@ -42,10 +43,11 @@ public class myReceiver extends BroadcastReceiver {
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent); //设置点击Intent
             Notification notification = builder.build(); //绑定Notification
-            manager.notify(0,notification); //发送通知请求
+            manager.notify(0,notification); //发送单条通知请求
         }
         /*  -- 接收动态广播 -- */
         else if(intent.getAction().equals("dynamic")){
+            num = num + 1;//改变notification的id号
             info = (Info)intent.getSerializableExtra("buy"); //获取商品信息类
             assert info != null; //debug
             //跳转至购物车界面
@@ -64,7 +66,7 @@ public class myReceiver extends BroadcastReceiver {
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent); //设置点击Intent
             Notification notification = builder.build(); //绑定Notification
-            manager.notify(0,notification); //发送通知请求
+            manager.notify(num,notification); //多条通知请求
         }
     }
 }
