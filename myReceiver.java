@@ -3,7 +3,9 @@ package com.gy.linjliang.shoppingapp;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.View;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 /**
@@ -55,6 +58,8 @@ public class myReceiver extends BroadcastReceiver {
             //打包Intent
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, mintent, PendingIntent.FLAG_UPDATE_CURRENT);
             Bitmap bm = BitmapFactory.decodeResource(context.getResources(),info.getImageindex());
+
+            /* 通知栏 */
             //获取系统的通知栏管理
             NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
             Notification.Builder builder = new Notification.Builder(context); //实例化Notification构造器
@@ -67,6 +72,16 @@ public class myReceiver extends BroadcastReceiver {
                     .setContentIntent(pendingIntent); //设置点击Intent
             Notification notification = builder.build(); //绑定Notification
             manager.notify(num,notification); //多条通知请求
+
+            /* 桌面Widget */
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(),R.layout.m_widget);//实例化RemoteView
+            //设置RemoteView的属性
+            remoteViews.setImageViewResource(R.id.widget_image, info.getImageindex());//widget显示图片
+            remoteViews.setTextViewText(R.id.widget_text, info.getName()+"已加入购物车");//widget显示文字
+            remoteViews.setOnClickPendingIntent(R.id.widget,pendingIntent);//widget点击事件
+            ComponentName me = new ComponentName(context, mWidget.class);
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context); //获得类的实例
+            appWidgetManager.updateAppWidget(me, remoteViews);
         }
     }
 }
